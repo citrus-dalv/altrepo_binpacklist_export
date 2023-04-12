@@ -1,5 +1,5 @@
 /* curlManager.cpp */
-#include "../include/curlManager.h"
+#include "curlManager.h"
 using namespace curl;
 
 CurlManager::CurlManager() = default;
@@ -35,6 +35,7 @@ void CurlManager::uninit()
     curl_easy_cleanup(curl);
     curl_global_cleanup();
     curl = nullptr;
+    error.clear();
     initStatus = false;
 }
 
@@ -51,8 +52,11 @@ bool CurlManager::get_data(const char *url, FILE *out)
     res = curl_easy_perform(curl);
     if (res != CURLE_OK) {
         error = "response fail: ";
-        error += url_easy_strerror(res) << std::endl;
+        error += curl_easy_strerror(res);
         return false;
     }
+    error.clear();
     return true;
 }
+
+const char* CurlManager::get_strerr() const { return error.data(); }
