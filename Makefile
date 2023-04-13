@@ -1,7 +1,7 @@
 CXX=g++
 FLAGS=-g -Wall 
 CXX+FLAGS=${CXX} ${FLAGS}
-OBJ=main.o curlManager.o altrepo_export.o
+OBJ=main.o curlManager.o altrepo_export.o fileManager.o
 TARGET=prog
 
 ${TARGET}: ${OBJ}
@@ -11,6 +11,9 @@ main.o: main.cpp
 	${CXX+FLAGS} -c $< -o $@
 
 curlManager.o: curlManager.cpp curlManager.h
+	${CXX+FLAGS} -c $< -o $@
+
+fileManager.o: fileManager.cpp fileManager.h
 	${CXX+FLAGS} -c $< -o $@
 
 altrepo_export.o: altrepo_export.cpp altrepo_export.h

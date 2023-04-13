@@ -3,10 +3,11 @@
 
 #include <curl/curl.h>
 #include <iostream>
+#include "iface.h"
 
-namespace curl {
+namespace altrepo {
 
-class CurlManager
+class CurlManager : public IFace
 {
 public:
     CurlManager();
@@ -22,8 +23,8 @@ public:
                                      /* Function retrieves data from url to
                                         stream */
     bool get_data(const char*, FILE* = stdout);
-
-    const char* get_strerr() const;  /* Returns error message of last job */
+                                     /* Returns error message of last job */
+    const char* get_strerr() const override;
 private:
     std::string error;               /* Error message */
 
