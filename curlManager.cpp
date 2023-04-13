@@ -43,14 +43,14 @@ CurlManager::operator bool() const { return initStatus; }
 
 bool CurlManager::get_data(const char *url, FILE *out)
 {
-    if (!initStatus) {
-        error = "not initialized";
-        return false;
-    }
-    curl_easy_setopt(curl, CURLOPT_URL, url);
+    if (!out) { error = "file invalid"; return false; }
+    if (!initStatus) { error = "not initialized"; return false; }
+
+    curl_easy_setopt(curl, CURLOPT_URL, url); /* Setup options */
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, out);
+
     res = curl_easy_perform(curl);
-    if (res != CURLE_OK) {
+    if (res != CURLE_OK) {                    /* If data not retrieved */
         error = "response fail: ";
         error += curl_easy_strerror(res);
         return false;

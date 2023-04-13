@@ -20,38 +20,26 @@ int Exporter::export_branch_packages(const char *arch, const char *branch,
     std::string url = exp_pack_url(arch, branch);      /* Url making */
     std::string filename = exp_filename(arch, branch); /* Filename making */
 
-                                        /* Temporary file creating */
-    auto fout = fm.open(filename.data(), "w");
-    if (!fout) { error = "can't open temporary file"; return ERROR; }
-
-    CurlManager cm;                     /* Start work with curl */
+    CurlManager cm;                          /* Start work with curl */
     if (!cm.init()) { error = "can't init curlManager"; return ERROR; }
-    if (!cm.get_data(url.data(), fout)) {     /* Try to retrieve data */
+                                             /* Try to retrieve data */
+    if (!cm.get_data(url.data(), fm.open(filename.data(), "w"))) {
         error = "can't get data: "; error += cm.get_strerr();
         return ERROR;
     }
-    /* File size can be huge, but we need to reopen it for read. We have
-     * to be sure then all output operations to files been done. */
-    sync();
-    fm.close(filename.data());
-
-    /* Reopening file to make json type from file data */
-    std::ifstream fin; fin.open(filename);
-    if (!fin.is_open()) {
-        error = "can't reopen temporary file to read";
+    /* Parsing from file to JSON */
+    if (!fm.parse_to_json(filename, packs.js)) {
+        error = "can't make parsing from file to JSON: ";
+        error += fm.get_strerr();
         return ERROR;
     }
-    
-    fin >> packs.js;  /* Making of json object from file data */
-    if (!resp_handler(packs.js)) {
-        return ERROR;
-    }
+    if (!resp_handler(packs.js)) return ERROR;
 
     packs.count  = packs.js["length"];
     packs.arch   = arch;
     packs.branch = branch;
-    fin.close();
     error.clear();
+
     return packs.count;
 }
 
@@ -65,6 +53,10 @@ bool Exporter::resp_handler(const nlohmann::json &j)
                 std::cerr << j["validation_message"][0] << std::endl;
         if (j.contains("errors"))
                 std::cerr << j["errors"]["arch"] << std::endl;
+        return false;
+    }
+    if (!j.contains("length")) {
+        error = "JSON structure invalid";
         return false;
     }
     return true;
