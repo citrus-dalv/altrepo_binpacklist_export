@@ -1,31 +1,40 @@
 CXX=g++
 FLAGS=-g -Wall 
 CXX+FLAGS=${CXX} ${FLAGS}
-OBJ=main.o curlManager.o altrepo_export.o fileManager.o unique.o
+
+LIBPATH=./lib/
+HEADERS=${LIBPATH}include/
+SOURCES=${LIBPATH}src/
+OBJECTS=${SOURCES}altrepo_export.o ${SOURCES}curlManager.o\
+		${SOURCES}fileManager.o
+LIB_NAME=libaltrepo_export.so
+LIB_VERSION=0.0.1
+LIB=${LIB_NAME}.${LIB_VERSION}
+LIBOTHER=-lcurl
+
 TARGET=prog
 
-${TARGET}: ${OBJ}
-	${CXX+FLAGS} ${OBJ} -o $@ -lcurl 
-
-main.o: main.cpp
-	${CXX+FLAGS} -c $< -o $@
-
-curlManager.o: curlManager.cpp curlManager.h
-	${CXX+FLAGS} -c $< -o $@
-
-fileManager.o: fileManager.cpp fileManager.h
-	${CXX+FLAGS} -c $< -o $@
-
-altrepo_export.o: altrepo_export.cpp altrepo_export.h
-	${CXX+FLAGS} -c $< -o $@
+${TARGET}: library main.cpp unique.o
+	${CXX+FLAGS} main.cpp unique.o -o $@ -L${LIBPATH} -laltrepo_export
 
 unique.o: unique.cpp unique.h
 	${CXX+FLAGS} -c $< -o $@
 
-execute: ${TARGET}
-	./${TARGET} i586 p10 p9
+library: ${OBJECTS}
+	${CXX+FLAGS} -shared ${OBJECTS} -o ${LIBPATH}${LIB} ${LIBOTHER} && \
+	cd ${LIBPATH} && ln -sf ${LIB} ${LIB_NAME}
+
+${SOURCES}altrepo_export.o: ${SOURCES}altrepo_export.cpp \
+							${HEADERS}altrepo_export.h
+	${CXX+FLAGS} -fPIC -c $< -o $@
+
+${SOURCES}curlManager.o: ${SOURCES}curlManager.cpp ${HEADERS}curlManager.h
+	${CXX+FLAGS} -fPIC -c $< -o $@
+
+${SOURCES}fileManager.o: ${SOURCES}fileManager.cpp ${HEADERS}fileManager.h
+	${CXX+FLAGS} -fPIC -c $< -o $@
 
 clean:
-	rm -f *.o ${TARGET}
+	rm -f *.o ${TARGET} ${LIBPATH}${LIB_NAME} ${LIBPATH}${LIB}
 
-rebuilt: clean ${TARGET}
+rebuild: clean ${TARGET}

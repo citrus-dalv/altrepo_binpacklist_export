@@ -1,5 +1,5 @@
 /* fileManager.cpp */
-#include "fileManager.h"
+#include "../include/fileManager.h"
 
 using namespace altrepo;
 

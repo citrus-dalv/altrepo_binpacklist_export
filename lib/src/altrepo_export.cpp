@@ -1,7 +1,7 @@
 /* altrepo_export.cpp */
 
-#include "altrepo_export.h"
-#include "curlManager.h"
+#include "../include/altrepo_export.h"
+#include "../include/curlManager.h"
 
 using namespace altrepo;
 
@@ -20,14 +20,14 @@ int Exporter::export_branch_packages(const char *arch, const char *branch,
     std::string url = exp_pack_url(arch, branch);      /* Url making */
     std::string filename = exp_filename(arch, branch); /* Filename making */
 
-    CurlManager cm;                          /* Start work with curl */
+    CurlManager cm;          /* Start work with curl */
     if (!cm.init()) { error = "can't init curlManager"; return ERROR; }
-                                             /* Try to retrieve data */
+                             /* Try to retrieve data */
     if (!cm.get_data(url.data(), fm.open(filename.data(), "w"))) {
         error = "can't get data: "; error += cm.get_strerr();
         return ERROR;
     }
-    /* Parsing from file to JSON */
+                             /* Parsing from file to JSON */
     if (!fm.parse_to_json(filename, packs.js)) {
         error = "can't make parsing from file to JSON: ";
         error += fm.get_strerr();

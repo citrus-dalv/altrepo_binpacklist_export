@@ -1,7 +1,6 @@
 #include <iostream>
 #include <exception>
-#include "altrepo_export.h"
-#include "fileManager.h"
+#include "./lib/include/altrepo_export.h"
 #include "unique.h"
 
 #define DEFURL "https://rdb.altlinux.org/api/export/branch_binary_packages/"
@@ -10,18 +9,22 @@ int main(int argc, char **argv)
 {
     if (argc != 4) {
         std::cerr << "expects three command line args: " <<
-            "arch, branch one, branch two" << std::endl;
+            "{arch} {branch one} {branch two}" << std::endl;
         exit(1);
     }
+    /* Tries to export packages to structures f_packs, s_packs from server,
+     * and if success, call function show_unique, that output result
+     * like JSON */
+
     using namespace altrepo;
     try {
         Exporter exp(DEFURL);
         PackageKit f_packs, s_packs;
 
         int f_cnt = exp.export_branch_packages(argv[1], argv[2], f_packs);
-        if (f_cnt == NONE) {
+        if (f_cnt == NONE) { /* If not retrieved any packages */
             std::cerr << exp.get_strerr() << std::endl;
-            exp.~Exporter();
+            exp.~Exporter(); /* Desctructor call befor exit */
             exit(1);
         }
 

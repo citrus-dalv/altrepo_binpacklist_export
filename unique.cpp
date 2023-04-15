@@ -1,8 +1,24 @@
 /* showUnique.cpp */
 #include "unique.h"
-#include "res_struct.h"
 
 using namespace altrepo;
+
+static const char *result_struct_json =
+R"(
+    {
+        "arch": null,
+        "uniques":
+            {
+                "first":{"name" : null, "count": null, "packages" : []},
+                "second":{"name" : null, "count": null, "packages" : []}
+            },
+        "upper_version":
+            {
+                "count": null,
+                "packages":[]
+            }
+    }
+)";
 
 void static unique_algorithm(nlohmann::json &j, const PackageKit &f,
                              const PackageKit &s)
@@ -59,7 +75,7 @@ void show_unique(const PackageKit &f, const PackageKit &s)
         return;
     }
 
-    nlohmann::json result = nlohmann::json::parse(json_res_struct);
+    nlohmann::json result = nlohmann::json::parse(result_struct_json);
     unique_algorithm(result, f, s);
 
     std::cout << std::setw(4) << result << std::endl;

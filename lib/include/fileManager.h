@@ -16,7 +16,7 @@
 namespace altrepo {
                 /* FileManager takes responsibility for work with files.
                  * When class instance is destroyed, it tries to delete
-                 * all created files */
+                 * all created files. */
 class FileManager : public IFace
 {
 public:

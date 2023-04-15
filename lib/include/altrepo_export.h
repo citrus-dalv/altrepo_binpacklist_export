@@ -1,14 +1,14 @@
 /* altrepo_export.h */
 #pragma once
 
-#include <string>
-#include <fstream>
-#include <unistd.h>
-
+#include "json.h"
 #include "iface.h"
 #include "fileManager.h"
 #include "curlManager.h"
-#include "json.h"
+
+#include <string>
+#include <fstream>
+#include <unistd.h>
 
 namespace altrepo
 {

@@ -1,5 +1,5 @@
 /* curlManager.cpp */
-#include "curlManager.h"
+#include "../include/curlManager.h"
 using namespace altrepo;
 
 CurlManager::CurlManager() = default;
