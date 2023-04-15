@@ -35,6 +35,6 @@ ${SOURCES}fileManager.o: ${SOURCES}fileManager.cpp ${HEADERS}fileManager.h
 	${CXX+FLAGS} -fPIC -c $< -o $@
 
 clean:
-	rm -f *.o ${TARGET} ${LIBPATH}${LIB_NAME} ${LIBPATH}${LIB}
+	rm -f *.o ${SOURCES}*.o ${TARGET} ${LIBPATH}${LIB_NAME} ${LIBPATH}${LIB}
 
 rebuild: clean ${TARGET}
