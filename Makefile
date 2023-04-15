@@ -1,7 +1,7 @@
 CXX=g++
 FLAGS=-g -Wall 
 CXX+FLAGS=${CXX} ${FLAGS}
-OBJ=main.o curlManager.o altrepo_export.o fileManager.o
+OBJ=main.o curlManager.o altrepo_export.o fileManager.o unique.o
 TARGET=prog
 
 ${TARGET}: ${OBJ}
@@ -19,8 +19,11 @@ fileManager.o: fileManager.cpp fileManager.h
 altrepo_export.o: altrepo_export.cpp altrepo_export.h
 	${CXX+FLAGS} -c $< -o $@
 
+unique.o: unique.cpp unique.h
+	${CXX+FLAGS} -c $< -o $@
+
 execute: ${TARGET}
-	./${TARGET}
+	./${TARGET} i586 p10 p9
 
 clean:
 	rm -f *.o ${TARGET}
