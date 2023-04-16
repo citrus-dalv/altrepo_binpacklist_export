@@ -9,15 +9,15 @@ C++ Library for exporting packages list from ALTRepo API
 ### Make
   Project building is automated by make utility. Makefile have main targets 'library' and 'prog'. You can build library separately.
   Just run make without any arguments. This will create the library and cli-unitiliy. Shared library is located in directory lib/.
-  It also creates there a symbolic link to library. You can copy it to system directories before run cli-untility.
+  It also creates there a symbolic link to library. You can copy it to system directories before run cli-utility.
   
 ## Library usage
-You have to include to your project lib/include/altrepo_export.h. It contains class Exporter, wich contains the method export_branch_packages(). Also contains struct PackageKit. Meghod export_branch_packages() wors with it and returns count of retrieved packages from server.
+You have to include to your project lib/include/altrepo_export.h. It contains class Exporter, wich contains the method export_branch_packages(). Also contains struct PackageKit. Method export_branch_packages() works with it and returns count of retrieved packages from server.
 Before call it, you have to set URL via set_url_export(const char*)
 > altrepo::Exporter exp;\
 > exp.set_url_export('url');\
 > altrepo::PackageKit packages;\
-> exp.export_branch_packages("i586", "p10");
+> exp.export_branch_packages("i586", "p10", packages);
 
 
 or create Exporter instance like:
