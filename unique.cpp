@@ -1,4 +1,4 @@
-/* showUnique.cpp */
+/* unique.cpp */
 #include "unique.h"
 
 using namespace altrepo;

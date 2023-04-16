@@ -13,4 +13,8 @@
 
 using namespace altrepo;
 
+    /* Function compares package names across branches, and shows
+     * unique packages from both branches. Also shows packages with
+     * upper version, if they contains in both branches. Result output
+     * in JSON format. */
 void show_unique(const PackageKit &first, const PackageKit &second);
