@@ -42,3 +42,9 @@ clean:
 	rm -f *.o ${SOURCES}*.o ${TARGET} ${LIBPATH}${LIB_NAME} ${LIBRARY}
 
 rebuild: clean ${TARGET}
+
+install: ${TARGET}
+	echo "$$(pwd)/lib" > /etc/ld.so.conf.d/altrepo_export.conf && ldconfig
+
+uninstall:
+	rm -f /etc/ld.so.conf.d/altrepo_export.conf && ldconfig
