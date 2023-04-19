@@ -2,49 +2,70 @@ CXX=g++
 FLAGS=-g -Wall 
 CXX+FLAGS=${CXX} ${FLAGS}
 
-LIBPATH=lib/
-HEADERS=${LIBPATH}include/
-SOURCES=${LIBPATH}src/
-OBJECTS=${SOURCES}altrepo_export.o ${SOURCES}curlManager.o\
-		${SOURCES}fileManager.o
-LIB_NAME=libaltrepo_export.so
-LIB_VERSION=0.0.1
-LIB=${LIB_NAME}.${LIB_VERSION}
-LIBRARY=${LIBPATH}${LIB}
-LIBOTHER=-lcurl
+LIB_PATH=lib/
+LIB_HEADERS=${LIB_PATH}include/
+LIB_SOURCES=${LIB_PATH}src/
+LIB_OBJ=${LIB_SOURCES}altrepo_export.o ${LIB_SOURCES}curlManager.o\
+		${LIB_SOURCES}fileManager.o
 
-TARGET=prog
+	# library naming
+LIB_ROOT_NAME=altrepoexport
+LIB_PERIOD=0
+LIB_VERSION=0.1
+LIB_SONAME=lib${LIB_ROOT_NAME}.so.${LIB_PERIOD}
+LIB_LINK_NAME=lib${LIB_ROOT_NAME}.so
+LIB_REAL_NAME=${LIB_SONAME}.${LIB_VERSION}
+LIBRARY=${LIB_PATH}${LIB_REAL_NAME}
+LIB_OTHER=-lcurl
 
-${TARGET}: ${LIBRARY} main.cpp unique.o
-	${CXX+FLAGS} main.cpp unique.o -o $@ -L${LIBPATH} -laltrepo_export
+	# install path
+PREFIX=/usr/local
+INCLUDE_PATH=/include/altrepo/
+
+PROG_NAME=prog
+
+${LIBRARY}: ${LIB_OBJ}
+	${CXX+FLAGS} -shared ${LIB_OBJ} -o $@ ${LIB_OTHER}
+	cd ${LIB_PATH} && ln -sf ${LIB_REAL_NAME} ${LIB_LINK_NAME}
+
+${LIB_SOURCES}altrepo_export.o: ${LIB_SOURCES}altrepo_export.cpp \
+							    ${LIB_HEADERS}altrepo_export.h
+	${CXX+FLAGS} -fPIC -c $< -o $@
+
+${LIB_SOURCES}curlManager.o: ${LIB_SOURCES}curlManager.cpp \
+							 ${LIB_HEADERS}curlManager.h
+	${CXX+FLAGS} -fPIC -c $< -o $@
+
+${LIB_SOURCES}fileManager.o: ${LIB_SOURCES}fileManager.cpp \
+							 ${LIB_HEADERS}fileManager.h
+	${CXX+FLAGS} -fPIC -c $< -o $@
+
+library: ${LIBRARY}
+	ls ${LIB_PATH}lib*
+.PHONY: library
+
+install: ${LIBRARY}
+	cd ${LIB_PATH} && install -m 644 ${LIB_REAL_NAME} ${PREFIX}/lib && \
+	cd ${PREFIX}/lib && ln -sf ${LIB_REAL_NAME} ${LIB_SONAME} && \
+		ln -sf ${LIB_SONAME} ${LIB_LINK_NAME} && ldconfig
+	mkdir -p ${PREFIX}${INCLUDE_PATH} && \
+		install -m 644 ${LIB_HEADERS}*.h ${PREFIX}${INCLUDE_PATH}
+.PHONY: install
+
+uninstall:
+	rm -rf ${PREFIX}/include/altrepo
+	rm -f ${PREFIX}/lib/*${LIB_ROOT_NAME}* && ldconfig
+.PHONY: uninstall
+
+${PROG_NAME}: main.cpp unique.o
+	${CXX+FLAGS} $< unique.o -o $@ -l${LIB_ROOT_NAME}
 
 unique.o: unique.cpp unique.h
 	${CXX+FLAGS} -c $< -o $@
 
-${LIBRARY}: ${OBJECTS}
-	${CXX+FLAGS} -shared ${OBJECTS} -o $@ ${LIBOTHER}
-	cd ${LIBPATH} && ln -sf ${LIB} ${LIB_NAME}
-
-${SOURCES}altrepo_export.o: ${SOURCES}altrepo_export.cpp \
-							${HEADERS}altrepo_export.h
-	${CXX+FLAGS} -fPIC -c $< -o $@
-
-${SOURCES}curlManager.o: ${SOURCES}curlManager.cpp ${HEADERS}curlManager.h
-	${CXX+FLAGS} -fPIC -c $< -o $@
-
-${SOURCES}fileManager.o: ${SOURCES}fileManager.cpp ${HEADERS}fileManager.h
-	${CXX+FLAGS} -fPIC -c $< -o $@
-
-library: ${LIBRARY}
-	ls ${LIBPATH}lib*
-
 clean:
-	rm -f *.o ${SOURCES}*.o ${TARGET} ${LIBPATH}${LIB_NAME} ${LIBRARY}
+	rm -f *.o ${LIB_SOURCES}*.o ${PROG_NAME} ${LIBRARY}\
+			  ${LIB_PATH}${LIB_LINK_NAME}
+.PHONY: clean
 
-rebuild: clean ${TARGET}
-
-install: ${TARGET}
-	echo "$$(pwd)/lib" > /etc/ld.so.conf.d/altrepo_export.conf && ldconfig
-
-uninstall:
-	rm -f /etc/ld.so.conf.d/altrepo_export.conf && ldconfig
+rebuild: clean ${LIBRARY} ${PROG_NAME}

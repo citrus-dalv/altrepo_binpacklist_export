@@ -1,6 +1,6 @@
 #include <iostream>
 #include <exception>
-#include "./lib/include/altrepo_export.h"
+#include <altrepo/altrepo_export.h>
 #include "unique.h"
 
 #define DEFURL "https://rdb.altlinux.org/api/export/branch_binary_packages/"

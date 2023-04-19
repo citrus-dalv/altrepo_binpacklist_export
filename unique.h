@@ -1,6 +1,6 @@
 /* unique.h */
 #pragma once
-#include "lib/include/altrepo_export.h"
+#include <altrepo/altrepo_export.h>
 
     /* Macrofunctions to get access to result JSON fields */
 #define BRANCH_NAME(json,arg)  json["uniques"][#arg]["name"]
